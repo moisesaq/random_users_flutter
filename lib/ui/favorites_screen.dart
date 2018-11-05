@@ -53,19 +53,14 @@ class FavoriteUsersState extends State<FavoriteUsersPage> {
   List<User> users;
   ItemSelection itemSelection;
 
-
-  final StreamController<int> _streamMode = StreamController<int>();
+  final modeNotifier = ValueNotifier(0);
   final StreamController<List<Item>> _streamItems = StreamController<List<Item>>();
 
   Future<String> loadDatabase() async {
     var db = await DAO().tableUser;
     var result = await db.getAllUsers();
-    /*setState(() {
-      users = result;
-      loading = false;
-    });*/
     List<Item> items = result.map((user) => user.toItem()).toList();
-    _streamMode.sink.add(1);
+    modeNotifier.value = 1;
     _streamItems.sink.add(items);
     return "Success!";
   }
@@ -81,21 +76,12 @@ class FavoriteUsersState extends State<FavoriteUsersPage> {
 
   @override
   void dispose() {
-    _streamMode.close();
     _streamItems.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    /*if (users != null) {
-      List<Item> items = users.map((user) => user.toItem()).toList();
-      itemSelection = ItemSelection(streamMode: _streamMode, streamItems: _streamItems, didItemSelected: (Item item) {
-        print("Item selected ${item.title}");
-      });
-      _streamMode.sink.add(1);
-      _streamItems.sink.add(items);
-    }*/
     return new Scaffold(
         appBar: new AppBar(
           title: new Text("Favorite Users"),
@@ -106,13 +92,13 @@ class FavoriteUsersState extends State<FavoriteUsersPage> {
                   MaterialPageRoute(builder: (context) => UsersScreen()));
             }),
             IconButton(icon: Icon(Icons.dashboard), onPressed: () {
-              var value = itemSelection.currentMode();
+              var value = modeNotifier.value;
               print(value);
-              _streamMode.sink.add(2);
+              modeNotifier.value = 2;
             })
           ]
         ),
-        body: ItemSelection(streamMode: _streamMode, streamItems: _streamItems, didItemSelected: (Item item) {
+        body: ItemSelection(modeListenable: modeNotifier, streamItems: _streamItems, didItemSelected: (Item item) {
           print("Item selected ${item.title}");
         })//getBody()
     );

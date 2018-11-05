@@ -6,20 +6,15 @@ import 'package:random_users_flutter/model/Item.dart';
 
 class ItemSelection extends StatefulWidget {
 
-  ItemSelection({@required this.streamMode, this.streamItems, this.didItemSelected});
+  ItemSelection({@required this.modeListenable, this.streamItems, this.didItemSelected});
 
-  //final ValueListenable<int> valueListenableMode;
-  final StreamController<int> streamMode;
+  final ValueListenable<int> modeListenable;
   final StreamController<List<Item>> streamItems;
   final List<Item> list = [];
   final DidItemSelected didItemSelected;
 
   @override
   ItemSelectionState createState() => ItemSelectionState();
-
-  Future<int> currentMode() async {
-    return await streamMode.stream.first;
-  }
 }
 
 class ItemSelectionState extends State<ItemSelection> {
@@ -36,24 +31,25 @@ class ItemSelectionState extends State<ItemSelection> {
   }
 
   Widget getList() {
-    return StreamBuilder<int>(
-        stream: widget.streamMode.stream,
-        initialData: 0,
-        builder: (BuildContext context, AsyncSnapshot<int> snapshot){
-          switch (snapshot.data) {
-            case 0:
-              return Center(child: Text("Loading..."));
-            case 1:
-              return createList();
-            case 2:
-              return createPageView();
-            default:
-              return Center(child: Text("Error :("));
-          }
-        });
+    return ValueListenableBuilder<int>(valueListenable: widget.modeListenable, builder: (context, value, child) {
+      switch (value) {
+        case 0:
+          return createMessageView("Loading...");
+        case 1:
+          return createListView();
+        case 2:
+          return createPageView();
+        default:
+          return createMessageView("Error :(");
+      }
+    });
+  }
+  
+  Widget createMessageView(String message) {
+    return Center(child: Text(message));
   }
 
-  Widget createList() {
+  Widget createListView() {
     return ListView.builder(
         itemCount: numberOfItems(),
         itemBuilder: (BuildContext context, int index) {
