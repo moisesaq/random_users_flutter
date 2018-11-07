@@ -7,8 +7,9 @@ import 'package:random_users_flutter/db/dao.dart';
 import 'package:random_users_flutter/model/Item.dart';
 import 'package:random_users_flutter/ui/custom_views/button.dart';
 import 'package:random_users_flutter/model/user.dart';
-import 'package:random_users_flutter/ui/item_selection.dart';
+import 'package:random_users_flutter/ui/custom_views/item_selection.dart';
 import 'package:random_users_flutter/ui/users_screen.dart';
+import 'package:random_users_flutter/ui/utils/status_item_selection.dart';
 
 
 class FavoritesScreen extends StatelessWidget {
@@ -48,28 +49,28 @@ class FavoriteUsersPage extends StatefulWidget {
 
 class FavoriteUsersState extends State<FavoriteUsersPage> {
 
-  bool showList = false;
-  bool loading = false;
+  final GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
   List<User> users;
   ItemSelection itemSelection;
 
-  final modeNotifier = ValueNotifier(0);
+  final statusNotifier = ValueNotifier(StatusItemSelection.LOADING);
   final StreamController<List<Item>> _streamItems = StreamController<List<Item>>();
 
   Future<String> loadDatabase() async {
     var db = await DAO().tableUser;
     var result = await db.getAllUsers();
     List<Item> items = result.map((user) => user.toItem()).toList();
-    modeNotifier.value = 1;
     _streamItems.sink.add(items);
+    if (items.isEmpty) {
+      statusNotifier.value = StatusItemSelection.EMPTY;
+    } else {
+      statusNotifier.value = StatusItemSelection.LIST;
+    }
     return "Success!";
   }
 
   @override
   void initState() {
-    setState(() {
-      loading = true;
-    });
     print(loadDatabase());
     super.initState();
   }
@@ -77,12 +78,14 @@ class FavoriteUsersState extends State<FavoriteUsersPage> {
   @override
   void dispose() {
     _streamItems.close();
+    statusNotifier.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+        key: _scaffoldState,
         appBar: new AppBar(
           title: new Text("Favorite Users"),
           actions: <Widget>[
@@ -92,57 +95,32 @@ class FavoriteUsersState extends State<FavoriteUsersPage> {
                   MaterialPageRoute(builder: (context) => UsersScreen()));
             }),
             IconButton(icon: Icon(Icons.dashboard), onPressed: () {
-              var value = modeNotifier.value;
-              print(value);
-              modeNotifier.value = 2;
+              changeStatusView();
             })
           ]
         ),
-        body: ItemSelection(modeListenable: modeNotifier, streamItems: _streamItems, didItemSelected: (Item item) {
+        body: ItemSelection(statusListenable: statusNotifier, streamItems: _streamItems, didItemSelected: (Item item) {
           print("Item selected ${item.title}");
-        })//getBody()
+          showSnackBar(context, item.title);
+        })
     );
   }
 
-  Widget getBody() {
-    return showList ? Center(child: SizedBox(height: 320.0, child: favoriteList())) : Center(child: Text("Hello world"));
+  void changeStatusView() {
+    var value = statusNotifier.value;
+    if (value == StatusItemSelection.LIST) {
+      statusNotifier.value = StatusItemSelection.PAGE;
+    } else {
+      statusNotifier.value = StatusItemSelection.LIST;
+    }
   }
 
-  Widget favoriteList() {
-    return ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: users != null ? users.length : 0,
-        itemBuilder: (BuildContext context, int index) {
-          return userCardView(index);
-        });
-  }
-
-  Widget userCardView(int index) {
-    return Card(color: Colors.white70,
-        child: userHorizontalView(index));
-  }
-
-  Widget userHorizontalView(int index) {
-    return SizedBox(width: 320.0, height: 200.0,
-        child: Column(children: <Widget>[
-          CircleAvatar(backgroundImage: NetworkImage(users[index].image, scale: 3.0), radius: 100.0),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                title(index),
-                IconButton(icon: Icon(Icons.delete), onPressed: () {
-                  removeFromFavorites(index);
-                })
-              ]
-          )],
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.center));
-  }
-
-  Widget title(int index) {
-    return Padding(padding: const EdgeInsets.all(8.0), 
-        child: Text("${users[index].fullname}", style: TextStyle(fontSize: 30.0)));
+  void showSnackBar(BuildContext context, String message) {
+    final snackBar = SnackBar(content: Text(message),  duration: Duration(seconds: 1),
+        action: SnackBarAction(label: "Ok", onPressed: () {
+          print("Ok pressed");
+        }));
+    _scaffoldState.currentState.showSnackBar(snackBar);
   }
 
   void removeFromFavorites(int index) async {
