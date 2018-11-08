@@ -7,7 +7,7 @@ import 'package:random_users_flutter/db/dao.dart';
 import 'package:random_users_flutter/model/Item.dart';
 import 'package:random_users_flutter/ui/custom_views/button.dart';
 import 'package:random_users_flutter/model/user.dart';
-import 'package:random_users_flutter/ui/custom_views/item_selection.dart';
+import 'package:random_users_flutter/ui/custom_views/item_selection/item_selection.dart';
 import 'package:random_users_flutter/ui/users_screen.dart';
 import 'package:random_users_flutter/ui/utils/status_item_selection.dart';
 
