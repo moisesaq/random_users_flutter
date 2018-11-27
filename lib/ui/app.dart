@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:random_users_flutter/ui/splash_screen.dart';
+import 'package:random_users_flutter/ui/pages/splash_page.dart';
 
 void main() => runApp(new MyApp());
 
@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: SplashScreen()//new MyHomePage(title: 'Flutter Demo Home Page'),
+        home: SplashPage()//new MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }

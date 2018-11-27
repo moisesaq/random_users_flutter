@@ -1,17 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:random_users_flutter/db/DAO.dart';
+import 'package:random_users_flutter/data/repository/db/dao.dart';
 import 'package:random_users_flutter/model/user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-class UsersScreen extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context) {
-    return UsersPage(title: 'Users');
-  }
-}
 
 class UsersPage extends StatefulWidget {
   UsersPage({Key key, this.title}) : super(key: key);
@@ -81,10 +73,11 @@ class UsersPageState extends State<UsersPage> {
 
   void saveAsFavorite(int index) async {
     var id = data[index]["id"];
-    var fullname = data[index]["first_name"];
-    var image = data[index]["avatar"];
+    var firstName = data[index]["first_name"];
+    var lastName = data[index]["last_name"];
+    var avatar = data[index]["avatar"];
     var db = await DAO().tableUser;
-    var result = await db.saveUser(User(id, fullname, image));
+    var result = await db.saveUser(User(id: id, firstName: firstName, lastName: lastName, avatar: avatar));
     if (result > 1) {
       print("User saved as favorite");
     } else {

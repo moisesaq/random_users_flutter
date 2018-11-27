@@ -2,52 +2,20 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:random_users_flutter/db/test_db.dart';
-import 'package:random_users_flutter/db/dao.dart';
+import 'package:random_users_flutter/data/repository/db/dao.dart';
 import 'package:random_users_flutter/model/Item.dart';
-import 'package:random_users_flutter/ui/custom_views/button.dart';
 import 'package:random_users_flutter/model/user.dart';
 import 'package:random_users_flutter/ui/custom_views/item_selection/item_selection.dart';
-import 'package:random_users_flutter/ui/users_screen.dart';
+import 'package:random_users_flutter/ui/pages/users_page.dart';
 import 'package:random_users_flutter/ui/utils/status_item_selection.dart';
 
-
-class FavoritesScreen extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context) {
-    return  FavoriteUsersPage();
-  }
-
-  //Just for test
-  Widget createButton() {
-    return new Center(
-      child: new Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Button(
-              title: "Test database",
-              onPressed: () {
-                TestDatabase.add();
-              }),
-          Button(
-              title: "Remove db",
-              onPressed: () {
-                TestDatabase.remove();
-              })
-        ],
-      ),
-    );
-  }
-}
-
-class FavoriteUsersPage extends StatefulWidget {
+class FavoritesPage extends StatefulWidget {
 
   @override
-  FavoriteUsersState createState() => FavoriteUsersState();
+  _FavoritesPageState createState() => _FavoritesPageState();
 }
 
-class FavoriteUsersState extends State<FavoriteUsersPage> {
+class _FavoritesPageState extends State<FavoritesPage> {
 
   final GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
   List<User> users;
@@ -59,7 +27,7 @@ class FavoriteUsersState extends State<FavoriteUsersPage> {
   Future<String> loadDatabase() async {
     var db = await DAO().tableUser;
     var result = await db.getAllUsers();
-    List<Item> items = result.map((user) => user.toItem()).toList();
+    List<Item> items = result.map((user) => Item.fromUser(user)).toList();
     _streamItems.sink.add(items);
     if (items.isEmpty) {
       statusNotifier.value = StatusItemSelection.EMPTY;
@@ -92,7 +60,7 @@ class FavoriteUsersState extends State<FavoriteUsersPage> {
             IconButton(icon: Icon(Icons.search), onPressed: () {
               Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => UsersScreen()));
+                  MaterialPageRoute(builder: (context) => UsersPage(title: 'Users')));
             }),
             IconButton(icon: Icon(Icons.dashboard), onPressed: () {
               changeStatusView();

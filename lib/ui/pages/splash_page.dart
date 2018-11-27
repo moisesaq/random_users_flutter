@@ -1,16 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:random_users_flutter/ui/custom_views/button.dart';
-import 'package:random_users_flutter/ui/favorites_screen.dart';
-import 'package:random_users_flutter/ui/users_screen.dart';
+import 'package:random_users_flutter/ui/pages/favorites_page.dart';
+import 'package:random_users_flutter/ui/pages/users_page.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashPage extends StatefulWidget {
 
   @override
-  SplashPageState createState() => SplashPageState();
+  _SplashPageState createState() => _SplashPageState();
 }
 
-class SplashPageState extends State<SplashScreen> {
+class _SplashPageState extends State<SplashPage> {
 
   final GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
   final textFieldController = TextEditingController();
@@ -31,7 +31,7 @@ class SplashPageState extends State<SplashScreen> {
                     title: "Go to favorites screen",
                     onPressed: () {
                       Navigator.push(
-                          context, MaterialPageRoute(builder: (context) => FavoritesScreen()));
+                          context, MaterialPageRoute(builder: (context) => FavoritesPage()));
                     }),
                 Button(
                     title: "Show alert or dialog",

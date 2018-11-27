@@ -1,5 +1,6 @@
-import 'package:random_users_flutter/db/db_helper.dart';
-import 'package:random_users_flutter/db/table_users.dart';
+
+import 'package:random_users_flutter/data/repository/db/db_helper.dart';
+import 'package:random_users_flutter/data/repository/db/table_users.dart';
 
 class DAO {
 
