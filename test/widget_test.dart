@@ -7,22 +7,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:random_users_flutter/ui/app.dart';
+import 'package:random_users_flutter/ui/utils/validate_login_fields.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(new MyApp());
+  test('Empty Email Test', () {
+    var result = ValidateLoginFields.validateEmail('');
+    expect(result, 'Enter email!');
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  test('Invalid Email Test', () {
+    var result = ValidateLoginFields.validateEmail('moisesapaza');
+    expect(result, 'Enter Valid Email!');
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  test('Valid Email Test', () {
+    var result = ValidateLoginFields.validateEmail('moisesapaza07@gmail.com');
+    expect(result, null);
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  test('Empty Password Test', () {
+    var result = ValidateLoginFields.validatePassword('');
+    expect(result, 'Enter password!');
+  });
+
+  test('Invalid Password Test', () {
+    var result = ValidateLoginFields.validatePassword('123');
+    expect(result, 'Password must ve more than 6 character');
+  });
+
+  test('Valid Password Test', () {
+    var result = ValidateLoginFields.validatePassword('qweqwe12313');
+    expect(result, null);
   });
 }
