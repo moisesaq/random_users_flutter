@@ -14,7 +14,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
 
   final GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
-  final textFieldController = TextEditingController();
 
   TextFormField emailTextForm;
   TextFormField passwordTextForm;
@@ -53,42 +52,6 @@ class _LoginPageState extends State<LoginPage> {
     }
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => FavoritesPage()));
-  }
-
-  Widget buildAlertButton() {
-    return Button(title: "Show alert or dialog",
-        onPressed: () {
-          showAlertDialog(context).then((bool value) {
-            if (value) {
-              showSnackBar(textFieldController.text);
-            }
-          });
-        });
-  }
-
-  Future<bool> showAlertDialog(BuildContext context) {
-    //final textField
-    return showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Hello flutter"),
-            content: buildTextFormField(textFieldController, buildInputDecoration("Numbers")),
-            actions: <Widget>[
-              Button(
-                  title: "Yes",
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  }),
-              Button(
-                  title: "No",
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  })
-            ],
-          );
-        });
   }
 
   TextFormField buildTextFormField(TextEditingController controller, InputDecoration decoration) {
